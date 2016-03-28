@@ -5,7 +5,7 @@ AllCops:
 AlignHash:
     EnforcedHashRocketStyle: table
 
-TrailingComma:
+TrailingCommaInLiteral:
     EnforcedStyleForMultiline: comma
 
 Metrics/AbcSize:

@@ -21,6 +21,7 @@ module Prometheus
           init_exception_metrics
           init_long_metrics
           config = Rails.application.config.prometheus_gataway
+          @time = Time.zone.now
           @push = Client::Push.new(config[:job], Process.pid.to_s, config[:url])
         end
 
@@ -79,13 +80,20 @@ module Prometheus
           end
         end
 
+        def push_registry
+          if @time < Time.zone.now - 1.minute
+            @push.add(@registry)
+            @time = Time.zone.now
+          end
+        end
+
         def record(labels, duration)
           @long_requests.increment(labels) if labels[:path].include?('/toolbox') && duration >= 15
           @long_requests.increment(labels) if labels[:path].exclude?('/toolbox') && duration >= 5
           @requests.increment(labels)
           @requests_duration.increment(labels, duration)
           @durations.add(labels, duration)
-          @push.add(@registry)
+          push_registry
         rescue
           # TODO: log unexpected exception during request recording
           nil
