@@ -36,7 +36,7 @@ module Prometheus
             method: env['REQUEST_METHOD'].downcase,
             host:   env['HTTP_HOST'].to_s,
             path:   env['PATH_INFO'].to_s,
-            rpath:  env['REQUEST_URI'].to_s,
+            rpath:  env['REQUEST_URI'].to_s.gsub(/\?.*/, ''),
           }
         end
 
